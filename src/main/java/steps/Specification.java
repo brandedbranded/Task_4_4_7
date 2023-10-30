@@ -9,19 +9,17 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
-import models.BookSaveAuthorExmp.BookSaveAuthorExmp;
+import models.authorExmp.BookSaveAuthorExmp;
 import models.requests.RequestAuthorSave;
 import models.requests.RequestBookSave;
 import models.requests.RequestGetAllBooksXML;
+import models.responseNegative.ResponseNegative;
 import models.responsesPositive.ResponseAuthorSave;
 import models.responsesPositive.ResponseBookSave;
-import models.responsesPositive.ResponseGetAllBooks;
-import models.responsesPositive.ResponseGetAllBooksXmlList;
-
-import java.util.List;
+import models.responsesPositive.ResponseGetAllBooksXML;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Specification {
     public static RequestSpecification reqSpec() {
@@ -50,6 +48,11 @@ public class Specification {
                 .build();
     }
 
+    public static void respSpecNegative(ResponseNegative response, String errorCode, String errorMessage) {
+        assertEquals(response.getErrorCode(), errorCode, "Неверный errorCode");
+        assertEquals(response.getErrorMessage(), errorMessage, "Неверный errorMessage");
+    }
+
     public static ResponseAuthorSave reqSpecSaveAuthor(String firstName, String lastName, String middleName, int statusCode) {
         RequestAuthorSave author = new RequestAuthorSave(firstName, lastName, middleName);
 
@@ -73,24 +76,35 @@ public class Specification {
                 .extract().as(ResponseBookSave.class);
     }
 
-    public static List<ResponseGetAllBooks> reqSpecGetAllBooks(String id, int statusCode) {
+    public static ResponseNegative reqSpecSaveBookNegative(String bookTitle, long authorId, int statusCode) {
+        BookSaveAuthorExmp author = new BookSaveAuthorExmp(authorId);
+        RequestBookSave book = new RequestBookSave(bookTitle, author);
+
+        return given().spec(reqSpec())
+                .body(book)
+                .when()
+                .post(EndPoints.saveNewBookURL)
+                .then().spec(respSpec(statusCode))
+                .extract().as(ResponseNegative.class);
+    }
+
+    public static ResponseNegative reqSpecGetAllBooksNegative(String id, int statusCode) {
         return given().spec(reqSpec())
                 .when()
                 .get(EndPoints.getAllBooksURL, id)
                 .then().spec(respSpec(statusCode))
-                .extract().jsonPath().getList(".", ResponseGetAllBooks.class);
+                .extract().as(ResponseNegative.class);
     }
 
-    public static ValidatableResponse reqSpecGetAllBooksNegative(String id, int statusCode, String errorCode) {
+    public static ResponseNegative reqSpecGetAllBooksNegativeIdNull(int statusCode) {
         return given().spec(reqSpec())
                 .when()
-                .get(EndPoints.getAllBooksURL, id)
+                .get("/library/authors/" + null + "/books")
                 .then().spec(respSpec(statusCode))
-        .body("errorCode", equalTo(errorCode))
-                ;
+                .extract().as(ResponseNegative.class);
     }
 
-    public static List<ResponseGetAllBooksXmlList> reqSpecGetAllBooksXML(int id, int statusCode) {
+    public static ResponseGetAllBooksXML reqSpecGetAllBooksXML(long id, int statusCode) {
         RequestGetAllBooksXML author = new RequestGetAllBooksXML();
         author.setAuthorId(id);
 
@@ -99,7 +113,7 @@ public class Specification {
                 .when()
                 .post(EndPoints.getAllBooksXMLUrl)
                 .then().spec(respSpec(statusCode))
-                .extract().xmlPath().getList(".", ResponseGetAllBooksXmlList.class);
+                .extract().as(ResponseGetAllBooksXML.class);
     }
 
     public static ValidatableResponse reqSpecGetAllBooksResponse(String id, int statusCode) {
@@ -108,4 +122,12 @@ public class Specification {
                 .get(EndPoints.getAllBooksURL, id)
                 .then().spec(respSpec(statusCode));
     }
+
+    /*public static List<ResponseGetAllBooks> reqSpecGetAllBooks(String id, int statusCode) {
+        return given().spec(reqSpec())
+                .when()
+                .get(EndPoints.getAllBooksURL, id)
+                .then().spec(respSpec(statusCode))
+                .extract().jsonPath().getList(".", ResponseGetAllBooks.class);
+    }*/
 }

@@ -1,14 +1,13 @@
 package steps.assertForTest;
 
-import models.responsesPositive.ResponseGetAllBooksXmlList;
+import entity.AuthorTable;
+import models.responsesPositive.ResponseGetAllBooksXML;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AssertGetBooksXML {
-    public static void verifyGetAllBooksXMLResponse(List<ResponseGetAllBooksXmlList> listBooksXML){
-        assertFalse(listBooksXML.isEmpty());
+    public static void verifyGetAllBooksXMLResponse(ResponseGetAllBooksXML listBooksXML, String bookTitle, AuthorTable author){
+        assertEquals(listBooksXML.getBooks().get(0).getBookTitle(), bookTitle);
+        assertEquals(listBooksXML.getBooks().get(0).getAuthor(), author);
     }
-
 }

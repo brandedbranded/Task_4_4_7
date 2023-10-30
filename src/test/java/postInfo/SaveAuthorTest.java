@@ -15,14 +15,11 @@ import steps.assertForTest.AssertSaveAuthor;
 @Story("saveNewAuthor")
 public class SaveAuthorTest {
 
-    @DisplayName("New author save")
+    @DisplayName("Сохранение нового автора")
     @Description("Автор сохраняется, статус-код 201, в ответе возвращается id сохранённого автора")
     @Test
     public void saveAuthorTest() {
-        String firstName = RandomStringUtils.randomAlphabetic(5);
-        String lastName = RandomStringUtils.randomAlphabetic(4);;
-        String middleName = RandomStringUtils.randomAlphabetic(6);;
-        ResponseAuthorSave author = Specification.reqSpecSaveAuthor(firstName, lastName, middleName, 201);
+        ResponseAuthorSave author = Specification.reqSpecSaveAuthor(RandomStringUtils.randomAlphabetic(3), RandomStringUtils.randomAlphabetic(3), RandomStringUtils.randomAlphabetic(3), 201);
         AssertSaveAuthor.verifySaveAuthorResponse(author);
     }
 }

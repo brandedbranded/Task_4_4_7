@@ -1,4 +1,4 @@
-package models.BookSaveAuthorExmp;
+package models.authorExmp;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

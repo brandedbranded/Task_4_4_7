@@ -3,7 +3,7 @@ package models.requests;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import models.BookSaveAuthorExmp.BookSaveAuthorExmp;
+import models.authorExmp.BookSaveAuthorExmp;
 
 @Data
 @AllArgsConstructor

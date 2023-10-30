@@ -3,6 +3,7 @@ package getInfo;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Story;
 import jdk.jfr.Description;
+import models.responseNegative.ResponseNegative;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,26 +14,38 @@ import steps.Specification;
 @Story("getAllBooks-negative")
 public class GetAllBooksNegativeTest {
 
-    @DisplayName("Get all books, unknown author")
+    @DisplayName("Получить список книг неизвестного автора")
     @Description("Список книг в ответе отсутствует, статус-код 409")
     @Test
     public void getAllBooksUnknownAuthorTest(){
-        Specification.reqSpecGetAllBooksNegative("1553", 409, "1004");
+        ResponseNegative response = Specification.reqSpecGetAllBooksNegative("1553", 409);
+        Specification.respSpecNegative(response, "1004", "Указанный автор не существует в таблице");
     }
 
-    @DisplayName("Get all books, id is incorrect")
+    @DisplayName("Получить список всех книг, id задан неверным форматом")
     @Description("Список книг в ответе отсутствует, статус-код 400")
-    @ParameterizedTest
-    @ValueSource (strings = {"fakeId"," "})
-    public void getAllBooksIdNullTest(String id){
-        Specification.reqSpecGetAllBooksNegative(id, 400, "1001");
+    @ParameterizedTest(name = "id = {0}")
+    @ValueSource (strings = {"fakeId"," ","null"})
+    public void getAllBooksIdWrongFormatTest(String id){
+        ResponseNegative response = Specification.reqSpecGetAllBooksNegative(id, 400);
+        Specification.respSpecNegative(response, "1001", "Некорректный обязательный параметр");
+
     }
 
-    @DisplayName("Get all books, id is incorrect")
+    @DisplayName("Получить список всех книг с отрицательным id")
     @Description("Список книг в ответе отсутствует, статус-код 400")
-    @ParameterizedTest
+    @ParameterizedTest(name = "id = {0}")
     @ValueSource (strings = {"-1","-2"})
     public void getAllBooksIdNegativeTest(String id){
-        Specification.reqSpecGetAllBooksNegative(id, 409, "1004");
+        ResponseNegative response = Specification.reqSpecGetAllBooksNegative(id, 409);
+        Specification.respSpecNegative(response, "1004", "Указанный автор не существует в таблице");
+    }
+
+    @DisplayName("Получить список всех книг без ввода id")
+    @Description("Список книг в ответе отсутствует, статус-код 400")
+    @Test
+    public void getAllBooksIdNullTest(){
+        ResponseNegative response = Specification.reqSpecGetAllBooksNegativeIdNull(400);
+        Specification.respSpecNegative(response, "1001", "Некорректный обязательный параметр");
     }
 }

@@ -1,13 +1,10 @@
 package models.responsesPositive;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import entity.AuthorTable;
 import lombok.Data;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
+import java.util.List;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -15,9 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ResponseGetAllBooksXML {
 
-    @XmlElement(name = "author", required = true)
-    private AuthorTable author;
-
-    @XmlElement(name = "book_title", required = true)
-    private String bookTitle;
+    @XmlElementWrapper(name = "books")
+    @XmlElement(name = "book", required = true)
+    List<ResponseGetAllBooks> books;
 }
